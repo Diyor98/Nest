@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
@@ -12,7 +12,7 @@ export class UserRepository extends Repository<User> {
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
     const { username, password } = authCredentialsDto;
 
-    const user = new User();
+    const user = this.create();
 
     user.username = username;
     user.salt = await bcrypt.genSalt();
@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User> {
       await user.save();
     } catch (error) {
       if (error.code === '23505') {
-        throw new BadRequestException();
+        throw new ConflictException();
       }
       throw new InternalServerErrorException();
     }
@@ -33,7 +33,7 @@ export class UserRepository extends Repository<User> {
   ): Promise<string> {
     const { username, password } = authCredentialsDto;
 
-    const user = await User.findOne({ username });
+    const user = await this.findOne({ username });
 
     if (user && (await user.validatePassword(password))) {
       return user.username;

@@ -32,25 +32,38 @@ export class TasksController {
   @Get()
   getTasks(
     @Query(ValidationPipe) filterDto: GetTasksFilterDto,
-    @GetUser() user: User
+    @GetUser() user: User,
   ): Promise<Task[]> {
-    this.logger.verbose(`User "${user.username}" retrieving all tasks. Filter ${JSON.stringify(filterDto)}.`)
+    this.logger.verbose(
+      `User "${user.username}" retrieving all tasks. Filter ${JSON.stringify(
+        filterDto,
+      )}.`,
+    );
     return this.taskService.getTasks(filterDto, user);
   }
 
   @Get('/:id')
-  async getTaskById(@Param('id', ParseIntPipe) id: number, @GetUser() user: User): Promise<Task> {
+  async getTaskById(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<Task> {
     return await this.taskService.getTaskById(id, user);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(@Body() createTaskDto: CreateTaskDto, @GetUser() user: User): Promise<Task> {
+  createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
     return this.taskService.createTask(createTaskDto, user);
   }
 
   @Delete(':id')
-  deleteTask(@Param('id', ParseIntPipe) id: number, @GetUser() user: User): Promise<string> {
+  deleteTask(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<string> {
     return this.taskService.deleteTask(id, user);
   }
 
@@ -58,7 +71,7 @@ export class TasksController {
   updateTaskStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,
-    @GetUser() user: User
+    @GetUser() user: User,
   ): Promise<Task> {
     return this.taskService.updateTaskStatus(id, status, user);
   }
